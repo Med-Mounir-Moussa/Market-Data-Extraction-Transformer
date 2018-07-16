@@ -22,12 +22,12 @@ waitTime = 120																				#this variable decides the number of seconds t
 chop = webdriver.ChromeOptions()
 chop.add_extension(pathToXpathFinderExtension) 												#adding the pathfinder extension.
 driver = webdriver.Chrome(pathToWebDriver,chrome_options=chop) 								#opening the webdriver with the xpathfinder extension installed
-driver.get("https://www.bloomberg.com/markets/currencies")
+driver.get("https://www.w3schools.com/html/html_formatting.asp")
 try:
 	element = WebDriverWait(driver,waitTime).until(EC.presence_of_element_located((By.ID,"xpath-content"))) #this instruction will wait for the user to select an element for 2 minutes then it will close
 	selectedXpath = driver.find_element(By.ID, "xpath-content").text
 	print(selectedXpath)
-	selector =driver.find_element(By.XPATH, selectedXpath)
+	selector =driver.find_element(By.XPATH, selectedXpath).text
 	print (selector)
 finally:
 	driver.close()
