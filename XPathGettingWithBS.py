@@ -43,6 +43,11 @@ def is_valid_html_tag(tag_name):
 	tags=["a","abbr","acronym","address","area","b","base","bdo","big","blockquote","body","br","button","caption","cite","code","col","colgroup","dd","del","dfn","div","dl","DOCTYPE","dt","em","fieldset","form","h1","h2","h3","h4","h5","h6","head","html","hr","i","img","input","ins","kbd","label","legend","li","link","map","meta","noscript","object","ol","optgroup","option","p","param","pre","q","samp","script","select","small","span","strong","style","sub","sup","table","tbody","td","textarea","tfoot","th","thead","title","tr","tt","ul","var"]
 	return tag_name in tags
 
+def isXpathAbsolute(xpath):
+	if(xpath[1] == '/'):
+		return(True)
+	else:
+		return(False)
 xpath = "/html/body/div[6]/div[1]/div[1]/table/tbody/tr[2]/td[2]" #The xpath is supposed following the rules for xpaths
 
 def absoluteXpathParsing (xpath,Bsobj): 
@@ -58,7 +63,11 @@ def absoluteXpathParsing (xpath,Bsobj):
 			x=x.replace(x[pos+1:posEnd], str(int(x[pos+1:posEnd])-1))
 			x= '.findAll("'+ x[:pos] + '", recursive =False)' +x[pos:]
 		BeautifulSoupPath += x
-	return(eval(BeautifulSoupPath))
+	try:
+		result= eval(BeautifulSoupPath)
+	except:
+		return None
+	return result
 	
 
 def	relativeXpathParsing (xpath,Bsobj):				# the xpath in relative
@@ -79,7 +88,11 @@ def	relativeXpathParsing (xpath,Bsobj):				# the xpath in relative
 			endPos = x.find(']')
 			subResult += '"' + x[pos+2:equalSignPos] + '":'+ x[equalSignPos+1:endPos] +'})'	
 		BeautifulSoupPath+= subResult
-	return(eval(BeautifulSoupPath))
+	try:
+		result= eval(BeautifulSoupPath)
+	except:
+		return None
+	return result
 
 def xpathToBSObj (xpath,Bsobj): #this function take an xpath and return the beautifulSoup object in that location
 	if (xpath[1] != '/'): #the xpath is absolute
@@ -87,9 +100,43 @@ def xpathToBSObj (xpath,Bsobj): #this function take an xpath and return the beau
 	else:#the xpath is relative
 		result =relativeXpathParsing(xpath,Bsobj)
 	return result
+
+def absoluteXpathFromBSObj (Bsobj): 
+	parentTag = Bsobj.parent
+	currentTag = Bsobj
+	result = '' 
+	while (parentTag != None and currentTag.name!= "html"):
+		allSimilairTags = parentTag.findAll(currentTag.name,recursive= False)
+		if(len(list(allSimilairTags)) >1):
+			for i,x in enumerate(allSimilairTags):
+				if(x== currentTag):
+					currentIndex= i+1
+					break
+			result = '/' + currentTag.name +  '[' + str(currentIndex) + ']' +result  
+		else:
+			result = '/' + currentTag.name + result
+		currentTag = parentTag
+		parentTag = parentTag.parent
+	result = '/html'+ result
+	return result	
+
+def AbsolutePathForXpath (xpath, Bsobj):
+	if(isXpathAbsolute(xpath)):
+		return xpath
+	else:
+		BsTag = xpathToBSObj(xpath,Bsobj)
+		return(absoluteXpathFromBSObj(BsTag))
+
 	
-""" ***************************************************************************************************************
-	an example of usage of those functions"""
-BsObj =getBsObjectWithSelenium("https://www.w3schools.com/")
-result=xpathToBSObj('/html/body/div[7]/div[1]/div[2]/div/div',BsObj)
-print(result)
+"""	
+ ***************************************************************************************************************
+										an example of usage of those functions
+	
+BsObj =getBsObjectWithSelenium("https://www.dailyfx.com/forex-rates")
+result=xpathToBSObj('//*[@id="dfx-search"]',BsObj)
+print("/html/body/div[1]/div[2]/div[2]/div[1]/div[2]/div[1]/table/tbody/tr[3]/td[2]/span")
+print(absoluteXpathFromBSObj(result))
+print(result.name)
+
+ ***************************************************************************************************************
+"""
