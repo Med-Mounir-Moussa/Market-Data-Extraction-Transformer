@@ -19,10 +19,8 @@ def CoordinateOfLastSimilarity(xpath1, xpath2):
 			return(preLastSimilarityPos, lastSimilarityPos)
 	return preLastSimilarityPos,lastSimilarityPos
 	
-def getListOfUnclesXpaths(xpath1,xpath2,bsObj):
-	preLastSimilarityPos,lastSimilarityPos = CoordinateOfLastSimilarity(xpath1,xpath2)
-	print(preLastSimilarityPos)
-	print(lastSimilarityPos)
+def getListOfUnclesXpaths(xpath1,xpath2,bsObj,preLastSimilarityPos,lastSimilarityPos):
+	# = CoordinateOfLastSimilarity(xpath1,xpath2)
 	parentTag = xpath1[preLastSimilarityPos+1:lastSimilarityPos] #parent tag mean here the first tag commune to both xpaths
 	bracketPos = parentTag.find('[')
 	if( bracketPos != -1):
@@ -41,9 +39,16 @@ def getListOfUnclesXpaths(xpath1,xpath2,bsObj):
 	
 def getListOfSiblingsXpaths(xpath1,xpath2,bsObj):
 	preLastSimilarityPos,lastSimilarityPos = CoordinateOfLastSimilarity(xpath1,xpath2)
+	listOfUnclesXpaths = getListOfUnclesXpaths(xpath1,xpath2,bsObj,preLastSimilarityPos,lastSimilarityPos)
+	while(len(listOfUnclesXpaths)==1 and preLastSimilarityPos != 0):
+		lastSimilarityPos = preLastSimilarityPos
+		for i in range(lastSimilarityPos-1,-1,-1):
+			if(xpath1[i] == '/'):
+				preLastSimilarityPos = i
+				break
+		listOfUnclesXpaths = getListOfUnclesXpaths(xpath1,xpath2,bsObj,preLastSimilarityPos,lastSimilarityPos)
 	tag1UniqueXpath = xpath1[lastSimilarityPos:]
 	tag2UniqueXpath = xpath2[lastSimilarityPos:]
-	listOfUnclesXpaths = getListOfUnclesXpaths(xpath1,xpath2,bsObj)
 	listOfSiblings1Xpaths = []
 	listOfSiblings2Xpaths = []
 	for x in listOfUnclesXpaths:
@@ -54,9 +59,9 @@ def getListOfSiblingsXpaths(xpath1,xpath2,bsObj):
 	return(listOfSiblings1Xpaths,listOfSiblings2Xpaths)
 	
 
-bsObj =getBsObjectWithSelenium("http://www.tunisianet.com.tn/528-lave-linge-tunisie")
-xpath1 = "/html/body/main/section/div/div[2]/section/section/div[3]/div/div[1]/article[1]/div[2]/h2"
-xpath2 = "/html/body/main/section/div/div[2]/section/section/div[3]/div/div[1]/article[1]/div[3]/div/span"
+bsObj =getBsObjectWithSelenium("https://markets.wsj.com/")
+xpath1 ="/html/body/div[4]/div/div[4]/div/div/div[2]/table/tbody/tr[1]/td[1]/a"
+xpath2 = '/html/body/div[4]/div/div[4]/div/div/div[2]/table/tbody/tr[1]/td[2]'
 xpath1 = AbsolutePathForXpath(xpath1,bsObj)
 xpath2 = AbsolutePathForXpath(xpath2,bsObj)
 	
