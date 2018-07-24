@@ -59,9 +59,9 @@ def getListOfSiblingsXpaths(xpath1,xpath2,bsObj):
 	return(listOfSiblings1Xpaths,listOfSiblings2Xpaths)
 	
 
-bsObj =getBsObjectWithSelenium("https://markets.wsj.com/")
-xpath1 ="/html/body/div[4]/div/div[4]/div/div/div[2]/table/tbody/tr[1]/td[1]/a"
-xpath2 = '/html/body/div[4]/div/div[4]/div/div/div[2]/table/tbody/tr[1]/td[2]'
+bsObj =getBsObjectWithSelenium("https://www.tayara.tn/c/v%C3%A9hicules")
+xpath1 ="/html/body/div[1]/div/span/div/div/div/div[3]/span/div/div/div/div[2]/div[2]/div/div[1]/div[2]/div[2]/div[1]/div[1]/a/div/div[2]/h2[2]"
+xpath2 ='/html/body/div[1]/div/span/div/div/div/div[3]/span/div/div/div/div[2]/div[2]/div/div[1]/div[2]/div[2]/div[1]/div[1]/a/div/div[2]/h2[1]/span'
 xpath1 = AbsolutePathForXpath(xpath1,bsObj)
 xpath2 = AbsolutePathForXpath(xpath2,bsObj)
 	
@@ -71,7 +71,7 @@ for x,y in zip(tag1ListOfXpths,tag2ListOfXpaths):
 	data = xpathToBSObj(x,bsObj)
 	value = xpathToBSObj(y,bsObj)
 	if(data and value):
-		print(data.get_text(),value.get_text())
+		print(data,value)
 	
 		
 """parentOfTag1 =tag1.parents
