@@ -1,5 +1,7 @@
 from pymongo import MongoClient
-def put_data_in_database(tag1ListOfXpths,tag2ListOfXpaths,dataBase):    
+from XPathGettingWithBS import xpathToBSObj
+from extractionFloat import extraction_float
+def put_data_in_database(tag1ListOfXpths,tag2ListOfXpaths,bsObj,dataBase):    
     posts = dataBase.posts
     for x,y in zip(tag1ListOfXpths,tag2ListOfXpaths):
             data = xpathToBSObj(x,bsObj)

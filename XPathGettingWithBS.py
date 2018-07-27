@@ -1,10 +1,10 @@
-from urllib.request import urlopen
+from urllib2 import urlopen
 from bs4 import BeautifulSoup
-from urllib.error import HTTPError
+from urllib2 import HTTPError
 from selenium import webdriver
 import time
 
-pathToWebDriver = r"C:\Users\HP\Desktop\chromedriver.exe"									#variable containing the path of chrome Webdriver on my pc!
+pathToWebDriver = r"C:\Users\USER\Downloads\chromedriver_win32\chromedriver.exe"									#variable containing the path of chrome Webdriver on my pc!
 """variable that determines how much time you estemate necessary for the javascript code to execute 
 	when opening webpages. It s only necessary to put a non zero value when the page usesa lot of Ajax."""
 javascriptEstimatedLoadingTime = 3		

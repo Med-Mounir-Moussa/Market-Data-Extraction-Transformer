@@ -2,6 +2,10 @@ from bs4 import BeautifulSoup
 from XPathGettingWithBS import getBsObjectWithSelenium
 from XPathGettingWithBS import xpathToBSObj
 from XPathGettingWithBS import AbsolutePathForXpath
+from extractionFloat import extraction_float
+from save import writeToJSONFile
+from pymongo import MongoClient
+from PutInDatabase import put_data_in_database
 
 """tag1= xpathToBSObj("/html/body/div[5]/main/div/div/div[3]/div[4]/div/table/tbody/tr[1]/td[1]/a/div[2]",bsObj)
 tag2= xpathToBSObj("/html/body/div[5]/main/div/div/div[3]/div[4]/div/table/tbody/tr[1]/td[2]",bsObj)"""
@@ -19,8 +23,10 @@ def CoordinateOfLastSimilarity(xpath1, xpath2):
 			return(preLastSimilarityPos, lastSimilarityPos)
 	return preLastSimilarityPos,lastSimilarityPos
 	
-def getListOfUnclesXpaths(xpath1,xpath2,bsObj,preLastSimilarityPos,lastSimilarityPos):
-	# = CoordinateOfLastSimilarity(xpath1,xpath2)
+def getListOfUnclesXpaths(xpath1,xpath2,bsObj):
+	preLastSimilarityPos,lastSimilarityPos = CoordinateOfLastSimilarity(xpath1,xpath2)
+	print(preLastSimilarityPos)
+	print(lastSimilarityPos)
 	parentTag = xpath1[preLastSimilarityPos+1:lastSimilarityPos] #parent tag mean here the first tag commune to both xpaths
 	bracketPos = parentTag.find('[')
 	if( bracketPos != -1):
@@ -39,16 +45,9 @@ def getListOfUnclesXpaths(xpath1,xpath2,bsObj,preLastSimilarityPos,lastSimilarit
 	
 def getListOfSiblingsXpaths(xpath1,xpath2,bsObj):
 	preLastSimilarityPos,lastSimilarityPos = CoordinateOfLastSimilarity(xpath1,xpath2)
-	listOfUnclesXpaths = getListOfUnclesXpaths(xpath1,xpath2,bsObj,preLastSimilarityPos,lastSimilarityPos)
-	while(len(listOfUnclesXpaths)==1 and preLastSimilarityPos != 0):
-		lastSimilarityPos = preLastSimilarityPos
-		for i in range(lastSimilarityPos-1,-1,-1):
-			if(xpath1[i] == '/'):
-				preLastSimilarityPos = i
-				break
-		listOfUnclesXpaths = getListOfUnclesXpaths(xpath1,xpath2,bsObj,preLastSimilarityPos,lastSimilarityPos)
 	tag1UniqueXpath = xpath1[lastSimilarityPos:]
 	tag2UniqueXpath = xpath2[lastSimilarityPos:]
+	listOfUnclesXpaths = getListOfUnclesXpaths(xpath1,xpath2,bsObj)
 	listOfSiblings1Xpaths = []
 	listOfSiblings2Xpaths = []
 	for x in listOfUnclesXpaths:
@@ -59,19 +58,27 @@ def getListOfSiblingsXpaths(xpath1,xpath2,bsObj):
 	return(listOfSiblings1Xpaths,listOfSiblings2Xpaths)
 	
 
-bsObj =getBsObjectWithSelenium("https://www.tayara.tn/c/v%C3%A9hicules")
-xpath1 ="/html/body/div[1]/div/span/div/div/div/div[3]/span/div/div/div/div[2]/div[2]/div/div[1]/div[2]/div[2]/div[1]/div[1]/a/div/div[2]/h2[2]"
-xpath2 ='/html/body/div[1]/div/span/div/div/div/div[3]/span/div/div/div/div[2]/div[2]/div/div[1]/div[2]/div[2]/div[1]/div[1]/a/div/div[2]/h2[1]/span'
+"""bsObj =getBsObjectWithSelenium("https://www.bloomberg.com/markets/currencies")
+xpath1 = "/html/body/div[5]/main/div/div/div[3]/div[4]/div/table/tbody/tr[1]/td[1]/a/div[2]"
+xpath2 = "/html/body/div[5]/main/div/div/div[3]/div[4]/div/table/tbody/tr[1]/td[2]"
 xpath1 = AbsolutePathForXpath(xpath1,bsObj)
 xpath2 = AbsolutePathForXpath(xpath2,bsObj)
 	
-(tag1ListOfXpths ,tag2ListOfXpaths) =getListOfSiblingsXpaths(xpath1,xpath2,bsObj)
-print(tag1ListOfXpths)
-for x,y in zip(tag1ListOfXpths,tag2ListOfXpaths):
-	data = xpathToBSObj(x,bsObj)
-	value = xpathToBSObj(y,bsObj)
-	if(data and value):
-		print(data,value)
+(tag1ListOfXpaths ,tag2ListOfXpaths) =getListOfSiblingsXpaths(xpath1,xpath2,bsObj)
+print(tag1ListOfXpaths)
+
+client = MongoClient('localhost',27017)
+dataBase = client.stage7
+put_data_in_database(tag1ListOfXpaths, tag2ListOfXpaths, bsObj, dataBase)"""
+#for x,y in zip(tag1ListOfXpths,tag2ListOfXpaths):
+#	data = xpathToBSObj(x,bsObj)
+#	value = xpathToBSObj(y,bsObj)
+#	if(data and value):                
+#		print(data.get_text(),extraction_float(value))
+#		post = {"taux de change":extraction_float(value),"monnaies":data.get_text()}
+#		posts.insert_one(post)
+		
+
 	
 		
 """parentOfTag1 =tag1.parents
